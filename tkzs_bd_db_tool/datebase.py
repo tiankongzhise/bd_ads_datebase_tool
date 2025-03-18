@@ -13,7 +13,7 @@ load_dotenv()
 
 Base = declarative_base()
 # 获取数据库连接信息
-DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_HOST = os.getenv("DB_HOST", None)
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_USER = os.getenv("DB_USERNAME", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
@@ -34,6 +34,10 @@ def init_db(base: Base = Base):
     初始化数据库表结构
     :param base: SQLAlchemy 声明基类 (declarative_base)
     """
+    if DB_HOST == None:
+        logging.error("缺少.env文件，数据库连接信息未配置，请检查环境变量配置")
+        raise ValueError("缺少.env文件，数据库连接信息未配置，请检查环境变量配置")
+    
     try:
         base.metadata.create_all(bind=engine)
         logging.info("数据库表初始化成功")
