@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime, Date, JSON, DECIMAL, INTEGER, func, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import UniqueConstraint
+from typing import List,Mapping
 
 Base = declarative_base()
 
@@ -67,6 +68,12 @@ class BdAuthTokenTable(Base):
         onupdate=func.now(),
         comment='记录更新时间'
     )
+    
+    def to_dict(self):
+        return {
+            c.key: getattr(self, c.key)
+            for c in inspect(self).mapper.column_attrs
+        }
 class BdAdMaterialTransferTable(Base):
     __tablename__ = 'ads_material_transfer'  # 表名
     
@@ -104,6 +111,11 @@ class BdAdMaterialTransferTable(Base):
         ]
         return f"<{self.__class__.__name__}({', '.join(class_attrs)})>"
 
+    def to_dict(self):
+        return {
+            c.key: getattr(self, c.key)
+            for c in inspect(self).mapper.column_attrs
+        }
 class BdAdCenterBindTable(Base):
     __tablename__ = 'ads_center_bind'
     id = Column(Integer, primary_key=True, autoincrement=True, comment='主键ID')
@@ -122,6 +134,21 @@ class BdAdCenterBindTable(Base):
         'schema': 'baidu_ads_operation'
         
     })
+    
+    def to_dict(self):
+        return {
+            c.key: getattr(self, c.key)
+            for c in inspect(self).mapper.column_attrs
+        }
+    @staticmethod
+    def to_account_mapping(account_list: List[Mapping]):
+        account_mapping = {}
+        for account in account_list:
+            account_mapping.update({
+                account.user_id: account.user_name,
+                account.user_name: account.user_id
+            })
+        return account_mapping
     
 class LeadsNoticePush(Base):
     """百度推送线索数据模型"""
