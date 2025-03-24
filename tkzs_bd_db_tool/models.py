@@ -209,3 +209,31 @@ class BaiduAccoutCostRrport(Base):
         return f"<BaiduAccoutCostRrport(userId={self.userId}, userName={self.userName},date={self.date},cost = {self.cost},created_at={self.created_at})>"
     
 
+class KeywordFilterAddress(Base):
+    """关键词过滤地址"""
+    __tablename__ = 'keyword_filter_address'
+    __table_args__ = (
+        UniqueConstraint('keyword','province','region', name='uq_keyword_province_region'),
+        {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_0900_ai_ci',
+        'mysql_row_format': 'DYNAMIC',
+        'schema': 'ads_dim_db'
+        
+    })
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    keyword = Column(String(255), comment='关键词')
+    is_shenzhen = Column(String(20), comment='是否深圳地区')
+    province = Column(String(255), comment='省份')
+    region = Column(String(255), comment='地域')
+    created_at = Column(DateTime,default=func.now(),comment='记录创建时间')
+    updated_at = Column(DateTime,onupdate=func.now(),comment='记录更新时间')
+    
+    def to_dict(self):
+        return {
+            c.key: getattr(self, c.key)
+            for c in inspect(self).mapper.column_attrs
+        }
+        

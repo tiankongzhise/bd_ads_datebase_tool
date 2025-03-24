@@ -4,6 +4,7 @@ from tkzs_bd_db_tool import models
 
 class TestModels(object):
     def __init__(self):
+        print('init?')
         init_db()
     
     def test_BdAuthTokenTable(self):
@@ -41,6 +42,13 @@ class TestModels(object):
             rsp = session.query(models.BdAdCenterBindTable).all()
             account_mapping = models.BdAdCenterBindTable.to_account_mapping(rsp)
             print(account_mapping)
+    
+    def test_keyword_filter_address(self):
+        with get_session() as session:
+            rsp = session.query(models.KeywordFilterAddress).all()
+            for item in rsp:
+                rsp_dict = item.to_dict()
+                print(rsp_dict)
 
 if __name__ == '__main__':
     test = TestModels()
@@ -49,5 +57,6 @@ if __name__ == '__main__':
     # test.test_BdAdCenterBindTable()
     # test.test_LeadsNoticePush()
     # test.test_BaiduAccoutCostRrport()
-    test.test_account_mapping()
+    # test.test_account_mapping()
+    test.test_keyword_filter_address()
     
