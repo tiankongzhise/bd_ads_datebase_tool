@@ -33,7 +33,7 @@ def init_db(base:Type[DeclarativeMeta]|None = None):
     初始化数据库表结构
     :param base: SQLAlchemy 声明基类 (declarative_base)
     """
-    if DB_HOST == None:
+    if DB_HOST is None:
         logging.error("缺少.env文件，数据库连接信息未配置，请检查环境变量配置")
         raise ValueError("缺少.env文件，数据库连接信息未配置，请检查环境变量配置")
     
@@ -53,5 +53,9 @@ def get_session()->  Generator[Session, None, None]:
     session = SessionLocal()
     try:
         yield session
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logging.error(f"数据库会话出错: {str(e)},已经回滚")
     finally:
         session.close()
